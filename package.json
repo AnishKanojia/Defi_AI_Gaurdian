@@ -1,0 +1,40 @@
+{
+  "name": "defi-guardian-ai",
+  "version": "1.0.0",
+  "description": "AI-powered security monitoring and anomaly detection platform for BNB Chain",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm:frontend\" \"npm:backend\"",
+    "frontend": "cd frontend && npm start",
+    "backend": "cd backend && .\\.venv\\Scripts\\python.exe -m uvicorn main:app --reload --port 8000",
+    "backend:setup": "cd backend && python -m venv .venv && ./.venv/Scripts/python.exe -m pip install --upgrade pip && ./.venv/Scripts/python.exe -m pip install -r requirements.txt",
+    "ai-service": "echo 'ai-service not configured'",
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt && cd ../ai-service && pip install -r requirements.txt",
+    "build": "cd frontend && npm run build",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && python -m pytest",
+    "deploy": "firebase deploy"
+  },
+  "keywords": [
+    "defi",
+    "blockchain",
+    "security",
+    "ai",
+    "bnb-chain",
+    "monitoring",
+    "anomaly-detection"
+  ],
+  "author": "DeFi Guardian AI Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "firebase": "^12.1.0"
+  }
+}

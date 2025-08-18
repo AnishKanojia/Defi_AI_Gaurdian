@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow authenticated users to read their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to read alerts
+    match /alerts/{alertId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Allow authenticated users to read transactions
+    match /transactions/{transactionId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only system can write transactions
+    }
+    
+    // Allow authenticated users to read contracts
+    match /contracts/{contractId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Allow authenticated users to read wallets
+    match /wallets/{walletId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only system can write wallet data
+    }
+    
+    // Allow authenticated users to read analytics data
+    match /analytics/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only system can write analytics
+    }
+    
+    // Allow authenticated users to read monitoring data
+    match /monitoring/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only system can write monitoring data
+    }
+    
+    // Allow authenticated users to read their own settings
+    match /settings/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
