@@ -101,7 +101,7 @@ const Monitoring: React.FC = () => {
     <Box>
       <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>Monitoring</Typography>
 
-      <Paper sx={{ p: 2, mb: 2, background: '#151515', border: '1px solid #2c2c2c' }}>
+      <Paper sx={(theme) => ({ p: 2, mb: 2, background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
             <TextField
@@ -138,7 +138,7 @@ const Monitoring: React.FC = () => {
         </Grid>
       </Paper>
 
-      <Paper sx={{ background: '#151515', border: '1px solid #2c2c2c' }}>
+      <Paper sx={(theme) => ({ background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
         <TableContainer>
           <Table size="small">
             <TableHead>
@@ -176,7 +176,7 @@ const Monitoring: React.FC = () => {
           </Table>
         </TableContainer>
         <Divider />
-        <Box sx={{ p: 1.5, display: 'flex', justifyContent: 'space-between', color: '#8a8a8a' }}>
+        <Box sx={{ p: 1.5, display: 'flex', justifyContent: 'space-between', color: (theme) => theme.palette.text.secondary }}>
           <span>{filtered.length} results</span>
           <span>Auto-refresh: {autoRefresh ? 'On' : 'Off'}</span>
         </Box>

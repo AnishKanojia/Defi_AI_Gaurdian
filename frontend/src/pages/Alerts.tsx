@@ -33,7 +33,7 @@ const severityColor = (sev: AlertType['severity']) => ({
 } as const)[sev] as any;
 
 const Alerts: React.FC = () => {
-  const { alerts, clearAlerts } = useAlerts();
+  const { alerts, clearAlerts, addAlert } = useAlerts();
 
   const [query, setQuery] = useState('');
   const [severity, setSeverity] = useState<'all' | AlertType['severity']>('all');
@@ -87,11 +87,53 @@ const Alerts: React.FC = () => {
     setSelected(new Set());
   };
 
+  const addDemoAlerts = () => {
+    const demo: AlertType[] = [
+      {
+        id: Math.random().toString(36).slice(2),
+        type: 'warning',
+        severity: 'high',
+        title: 'Liquidity Removal Detected',
+        message: '90% liquidity removed in 1 min',
+        timestamp: new Date(),
+        source: 'monitoring',
+        metadata: { contractAddress: '0xDEMO1', riskScore: 82, explanation: 'Large LP withdrawal spike vs baseline' },
+        acknowledged: false,
+        resolved: false,
+      },
+      {
+        id: Math.random().toString(36).slice(2),
+        type: 'error',
+        severity: 'critical',
+        title: 'Suspicious Admin Transfer',
+        message: 'Owner moved 40% supply to a new wallet',
+        timestamp: new Date(),
+        source: 'monitoring',
+        metadata: { contractAddress: '0xDEMO2', walletAddress: '0xADMIN', riskScore: 91, explanation: 'Admin transfer threshold exceeded' },
+        acknowledged: false,
+        resolved: false,
+      },
+      {
+        id: Math.random().toString(36).slice(2),
+        type: 'info',
+        severity: 'medium',
+        title: 'Unverified Contract Interaction',
+        message: 'New contract interacted with pool; unknown code hash',
+        timestamp: new Date(),
+        source: 'ai',
+        metadata: { contractAddress: '0xDEMO3', riskScore: 55, confidence: 0.76 },
+        acknowledged: false,
+        resolved: false,
+      },
+    ];
+    demo.forEach(addAlert);
+  };
+
   return (
     <Box>
       <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>Alerts</Typography>
 
-      <Paper sx={{ p: 2, mb: 2, background: '#151515', border: '1px solid #2c2c2c' }}>
+      <Paper sx={(theme) => ({ p: 2, mb: 2, background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
             <TextField
@@ -122,12 +164,13 @@ const Alerts: React.FC = () => {
           <Grid item xs={12} md={4} sx={{ display: 'flex', gap: 1, justifyContent: { xs: 'stretch', md: 'flex-end' } }}>
             <Button variant="outlined" startIcon={<CheckIcon />} disabled={!selected.size} onClick={acknowledgeSelected}>Acknowledge</Button>
             <Button variant="contained" startIcon={<DoneAllIcon />} disabled={!selected.size} onClick={resolveSelected} sx={{ backgroundColor: '#00d4aa', color: '#000', '&:hover': { backgroundColor: '#00c4a0' } }}>Resolve</Button>
+            <Button variant="text" onClick={addDemoAlerts}>Add Demo Alerts</Button>
             <Button color="error" variant="text" onClick={clearAlerts}>Clear All</Button>
           </Grid>
         </Grid>
       </Paper>
 
-      <Paper sx={{ background: '#151515', border: '1px solid #2c2c2c' }}>
+      <Paper sx={(theme) => ({ background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
         <TableContainer>
           <Table size="small">
             <TableHead>
@@ -162,7 +205,7 @@ const Alerts: React.FC = () => {
           </Table>
         </TableContainer>
         <Divider />
-        <Box sx={{ p: 1.5, display: 'flex', justifyContent: 'space-between', color: '#8a8a8a' }}>
+        <Box sx={{ p: 1.5, display: 'flex', justifyContent: 'space-between', color: (theme) => theme.palette.text.secondary }}>
           <span>{rows.length} alerts</span>
           <span>Selected: {selected.size}</span>
         </Box>

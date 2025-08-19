@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics, isSupported as analyticsIsSupported } from 'firebase/analytics';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Your Firebase web app configuration
@@ -34,4 +34,10 @@ if (typeof window !== 'undefined') {
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
+// Enable offline persistence when possible
+if (typeof window !== 'undefined') {
+  try {
+    enableIndexedDbPersistence(db).catch(() => undefined);
+  } catch (_) { /* ignore */ }
+}
 export const storage = getStorage(app);

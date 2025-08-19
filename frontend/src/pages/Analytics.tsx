@@ -72,23 +72,23 @@ const Analytics: React.FC = () => {
     <Box>
       <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>Analytics</Typography>
 
-      <Paper sx={{ p: 2, mb: 2, background: '#151515', border: '1px solid #2c2c2c' }}>
+      <Paper sx={(theme) => ({ p: 2, mb: 2, background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle2" sx={{ color: '#9a9a9a' }}>Time Range</Typography>
+            <Typography variant="subtitle2" sx={{ color: (theme) => theme.palette.text.secondary }}>Time Range</Typography>
             <TextField select size="small" value={range} onChange={(e)=>setRange(e.target.value as any)}>
               {['24h','7d','30d'].map(v => <MenuItem key={v} value={v}>{v}</MenuItem>)}
             </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Typography variant="body2" sx={{ color: '#8a8a8a' }}>Mock data shown. Wire to backend when available.</Typography>
+            <Typography variant="body2" sx={{ color: (theme) => theme.palette.text.secondary }}>Mock data shown. Wire to backend when available.</Typography>
           </Grid>
         </Grid>
       </Paper>
 
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 2, background: '#151515', border: '1px solid #2c2c2c' }}>
+          <Paper sx={(theme) => ({ p: 2, background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
             <Typography variant="h6" sx={{ mb: 2 }}>Transactions Volume</Typography>
             <LineChart
               xAxis={[{ data: txSeries.x, scaleType: 'time' }]}
@@ -98,7 +98,7 @@ const Analytics: React.FC = () => {
           </Paper>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, background: '#151515', border: '1px solid #2c2c2c' }}>
+          <Paper sx={(theme) => ({ p: 2, background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
             <Typography variant="h6" sx={{ mb: 2 }}>Risk Category Distribution</Typography>
             <PieChart
               series={[{
@@ -112,7 +112,7 @@ const Analytics: React.FC = () => {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, background: '#151515', border: '1px solid #2c2c2c' }}>
+          <Paper sx={(theme) => ({ p: 2, background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
             <Typography variant="h6" sx={{ mb: 2 }}>Network Risk Score</Typography>
             <LineChart
               xAxis={[{ data: riskSeries.x, scaleType: 'time' }]}
@@ -122,7 +122,7 @@ const Analytics: React.FC = () => {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, background: '#151515', border: '1px solid #2c2c2c' }}>
+          <Paper sx={(theme) => ({ p: 2, background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
             <Typography variant="h6" sx={{ mb: 2 }}>TPS</Typography>
             <BarChart
               xAxis={[{ data: tpsLabels, scaleType: 'band' }]}
@@ -133,11 +133,11 @@ const Analytics: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Divider sx={{ my: 3, borderColor: '#2c2c2c' }} />
+      <Divider sx={{ my: 3, borderColor: (theme) => theme.palette.divider }} />
 
-      <Paper sx={{ p: 2, background: '#151515', border: '1px solid #2c2c2c' }}>
+      <Paper sx={(theme) => ({ p: 2, background: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` })}>
         <Typography variant="h6" sx={{ mb: 1 }}>AI-Powered Smart Contract Analyzer (Pre-deployment)</Typography>
-        <Typography variant="body2" sx={{ color: '#8a8a8a', mb: 2 }}>Paste Solidity code to receive a quick risk assessment and recommendations.</Typography>
+        <Typography variant="body2" sx={{ color: (theme) => theme.palette.text.secondary, mb: 2 }}>Paste Solidity code to receive a quick risk assessment and recommendations.</Typography>
         <Grid container spacing={2} alignItems="stretch">
           <Grid item xs={12} md={7} sx={{ display: 'flex', flexDirection: 'column' }}>
             <TextField
@@ -149,21 +149,21 @@ const Analytics: React.FC = () => {
               placeholder="// Solidity code"
             />
             <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-              <Button variant="contained" onClick={analyze} disabled={analyzing} sx={{ backgroundColor: '#00d4aa', color: '#000', '&:hover': { backgroundColor: '#00c4a0' } }}>
+              <Button variant="contained" color="primary" onClick={analyze} disabled={analyzing}>
                 {analyzing ? 'Analyzing...' : 'Analyze'}
               </Button>
               <Button variant="text" onClick={()=>setSource('')}>Clear</Button>
             </Box>
           </Grid>
           <Grid item xs={12} md={5}>
-            <Box sx={{ p: 2, border: '1px solid #2c2c2c', borderRadius: 1, height: '100%', background: '#101010', overflow: 'auto' }}>
+            <Box sx={{ p: 2, border: (theme) => `1px solid ${theme.palette.divider}`, borderRadius: 1, height: '100%', background: (theme) => theme.palette.background.default, overflow: 'auto' }}>
               {result ? (
                 <Box>
                   {result.error && <Typography color="error">{result.error}</Typography>}
                   {!result.error && (
                     <>
                       <Typography variant="subtitle1">Risk Score: <b>{result.risk_score}</b> ({result.risk_level})</Typography>
-                      <Typography variant="body2" sx={{ color: '#8a8a8a', mb: 1 }}>Confidence: {Math.round((result.confidence||0)*100)/100}</Typography>
+                      <Typography variant="body2" sx={{ color: (theme) => theme.palette.text.secondary, mb: 1 }}>Confidence: {Math.round((result.confidence||0)*100)/100}</Typography>
                       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
                         {(result.detected_patterns||[]).map((p: string, i: number) => (
                           <Chip key={i} label={p} size="small" />
@@ -179,15 +179,15 @@ const Analytics: React.FC = () => {
                   )}
                 </Box>
               ) : (
-                <Typography variant="body2" sx={{ color: '#8a8a8a' }}>Run an analysis to see results here.</Typography>
+                <Typography variant="body2" sx={{ color: (theme) => theme.palette.text.secondary }}>Run an analysis to see results here.</Typography>
               )}
             </Box>
           </Grid>
         </Grid>
       </Paper>
 
-      <Divider sx={{ my: 3, borderColor: '#2c2c2c' }} />
-      <Typography variant="body2" sx={{ color: '#8a8a8a' }}>Note: Charts use mock data. The analyzer runs lightweight heuristic checks server-side.</Typography>
+      <Divider sx={{ my: 3, borderColor: (theme) => theme.palette.divider }} />
+      <Typography variant="body2" sx={{ color: (theme) => theme.palette.text.secondary }}>Note: Charts use mock data. The analyzer runs lightweight heuristic checks server-side.</Typography>
     </Box>
   );
 };

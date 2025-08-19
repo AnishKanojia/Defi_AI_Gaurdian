@@ -13,6 +13,8 @@ import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import InsightsOutlinedIcon from '@mui/icons-material/InsightsOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import { NavLink } from 'react-router-dom';
 
 interface SidebarProps {
@@ -25,6 +27,8 @@ const navItems = [
   { label: 'Monitoring', to: '/monitoring', icon: <TimelineOutlinedIcon /> },
   { label: 'Alerts', to: '/alerts', icon: <ReportProblemOutlinedIcon /> },
   { label: 'Analytics', to: '/analytics', icon: <InsightsOutlinedIcon /> },
+  { label: 'Risk Dashboard', to: '/risk', icon: <SecurityOutlinedIcon /> },
+  { label: 'Contracts', to: '/contracts', icon: <ArticleOutlinedIcon /> },
   { label: 'Settings', to: '/settings', icon: <SettingsOutlinedIcon /> },
 ];
 
@@ -39,8 +43,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           width: drawerWidth,
-          background: 'linear-gradient(180deg, #111 0%, #0d0d0d 100%)',
-          borderRight: '1px solid #222',
+          backgroundColor: (theme) => theme.palette.background.default,
+          borderRight: (theme) => `1px solid ${theme.palette.divider}`,
           transition: 'width 0.3s ease',
           overflowX: 'hidden',
         },
@@ -48,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
     >
       <Box sx={{ px: open ? 2 : 0, py: 2 }}>
         {open && (
-          <Typography variant="overline" sx={{ color: '#7a7a7a', letterSpacing: 1 }}>
+          <Typography variant="overline" sx={{ color: (theme) => theme.palette.text.secondary, letterSpacing: 1 }}>
             Navigation
           </Typography>
         )}
@@ -64,24 +68,24 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
                 justifyContent: open ? 'initial' : 'center',
                 px: 1.5,
                 '&.active': {
-                  backgroundColor: '#1f1f1f',
+                  backgroundColor: theme.palette.action.selected,
                   borderLeft: '3px solid #00d4aa',
                 },
-                '&:hover': { backgroundColor: '#1a1a1a' },
+                '&:hover': { backgroundColor: theme.palette.action.hover },
               })}
             >
               <ListItemIcon sx={{
                 minWidth: 0,
                 mr: open ? 1.5 : 'auto',
                 justifyContent: 'center',
-                color: '#c9c9c9',
+                color: (theme) => theme.palette.text.secondary,
               }}>
                 {item.icon}
               </ListItemIcon>
               <ListItemText
                 primary={item.label}
                 sx={{
-                  color: '#c9c9c9',
+                  color: (theme) => theme.palette.text.secondary,
                   opacity: open ? 1 : 0,
                   transition: 'opacity 0.2s ease',
                 }}
@@ -90,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           </ListItem>
         ))}
       </List>
-      <Divider sx={{ borderColor: '#222', mt: 'auto' }} />
+      <Divider sx={{ borderColor: (theme) => theme.palette.divider, mt: 'auto' }} />
     </Drawer>
   );
 };

@@ -44,6 +44,16 @@ class AlertService:
 		result['id'] = doc.id
 		return result
 
+	async def create_alert_raw(self, data: Dict[str, Any]) -> Any:
+		"""Create alert from a plain dict payload (server-generated)."""
+		if self.db is None:
+			raise RuntimeError('AlertService not initialized')
+		ref = self.db.collection(self.collection_name).add(data)
+		doc = ref[1].get()
+		result = doc.to_dict() or {}
+		result['id'] = doc.id
+		return result
+
 	async def update_alert(self, alert_id: str, alert_update) -> Any:
 		if self.db is None:
 			raise RuntimeError('AlertService not initialized')

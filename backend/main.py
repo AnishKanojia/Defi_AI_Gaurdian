@@ -20,6 +20,8 @@ from services.blockchain_monitor import BlockchainMonitor
 from services.ai_service import AIService
 from services.alert_service import AlertService
 from services.firebase_service import FirebaseService
+from services.security_service import score_wallet_safety, predict_rug_pull, check_phishing
+from services.subscription_service import SubscriptionService
 from utils.auth import verify_token
 
 # Load environment variables
@@ -57,6 +59,7 @@ blockchain_monitor = BlockchainMonitor()
 ai_service = AIService()
 alert_service = AlertService()
 firebase_service = FirebaseService()
+subscriptions = SubscriptionService()
 
 # Security
 security = HTTPBearer()
@@ -280,6 +283,125 @@ async def get_ai_insights():
         logger.error(f"Error getting AI insights: {e}")
         raise HTTPException(status_code=500, detail="Failed to get AI insights")
 
+@app.post("/api/ai/investment-suggestions")
+async def ai_investment_suggestions(payload: Dict[str, Any] = Body(...)):
+    """Demo heuristic suggestions based on simple profile and risk appetite."""
+    try:
+        profile = payload or {}
+        appetite = (profile.get('risk') or 'medium').lower()
+        suggestions = []
+        if appetite == 'low':
+            suggestions = [
+                {'asset': 'BTC', 'allocation': 40, 'reason': 'Store of value'},
+                {'asset': 'ETH', 'allocation': 30, 'reason': 'Smart contracts'},
+                {'asset': 'USDC Yield', 'allocation': 30, 'reason': 'Stable yield'},
+            ]
+        elif appetite == 'high':
+            suggestions = [
+                {'asset': 'L2 DeFi Basket', 'allocation': 35, 'reason': 'High growth DeFi'},
+                {'asset': 'AI Tokens', 'allocation': 25, 'reason': 'Narrative momentum'},
+                {'asset': 'Staked ETH', 'allocation': 20, 'reason': 'Yield + exposure'},
+                {'asset': 'Stablecoin yield', 'allocation': 20, 'reason': 'Dry powder'},
+            ]
+        else:
+            suggestions = [
+                {'asset': 'BTC', 'allocation': 30, 'reason': 'Core position'},
+                {'asset': 'ETH', 'allocation': 30, 'reason': 'Smart contracts'},
+                {'asset': 'Staked ETH', 'allocation': 20, 'reason': 'Yield'},
+                {'asset': 'DeFi Index', 'allocation': 20, 'reason': 'Diversification'},
+            ]
+        return JSONResponse(content={'suggestions': suggestions})
+    except Exception as e:
+        logger.error(f"ai suggestions error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate suggestions")
+
+# Security endpoints
+@app.get("/api/security/wallet-safety")
+async def api_wallet_safety(address: str):
+    try:
+        return JSONResponse(content=score_wallet_safety(address))
+    except Exception as e:
+        logger.error(f"wallet safety error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to score wallet")
+
+@app.get("/api/security/rug-pull")
+async def api_rug_pull(token: str):
+    try:
+        return JSONResponse(content=predict_rug_pull(token))
+    except Exception as e:
+        logger.error(f"rug pull error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to assess token")
+
+@app.get("/api/security/phishing")
+async def api_phishing(url: str):
+    try:
+        return JSONResponse(content=check_phishing(url))
+    except Exception as e:
+        logger.error(f"phishing error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to check url")
+
+# Subscriptions for exploit alerts (demo)
+@app.post("/api/security/subscribe")
+async def api_subscribe(address: str, protocol: str):
+    try:
+        subscriptions.subscribe(address, protocol)
+        # persist a simple mapping doc id "protocol:address"
+        try:
+            doc_id = f"{protocol.lower()}:{address.lower()}"
+            await firebase_service.set_document('subscriptions', doc_id, { 'protocol': protocol.lower(), 'address': address.lower() })
+        except Exception:
+            pass
+        return {"ok": True}
+    except Exception as e:
+        logger.error(f"subscribe error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to subscribe")
+
+@app.post("/api/security/unsubscribe")
+async def api_unsubscribe(address: str, protocol: str):
+    try:
+        subscriptions.unsubscribe(address, protocol)
+        try:
+            doc_id = f"{protocol.lower()}:{address.lower()}"
+            await firebase_service.delete_document('subscriptions', doc_id)
+        except Exception:
+            pass
+        return {"ok": True}
+    except Exception as e:
+        logger.error(f"unsubscribe error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to unsubscribe")
+
+# Demo trigger: simulate protocol exploit to alert subscribed users
+@app.post("/api/security/trigger-exploit")
+async def api_trigger_exploit(protocol: str, title: str = "Exploit detected", message: str = "Known vulnerability is being exploited"):
+    try:
+        addrs = subscriptions.list_addresses_for(protocol)
+        alert = {
+            'id': 'exploit-'+protocol,
+            'type': 'error',
+            'severity': 'critical',
+            'title': title,
+            'message': message + f" (protocol: {protocol})",
+            'timestamp': datetime.utcnow().isoformat(),
+            'source': 'security',
+            'metadata': { 'protocol': protocol, 'addresses': addrs },
+            'acknowledged': False,
+            'resolved': False,
+        }
+        await sio.emit('alert', alert)
+        return {"ok": True, "notified": len(addrs)}
+    except Exception as e:
+        logger.error(f"trigger exploit error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to trigger exploit alert")
+
+@app.get("/api/security/subscriptions")
+async def api_list_subscriptions(address: str):
+    try:
+        items = subscriptions.list_for_address(address)
+        return { 'protocols': items }
+    except Exception as e:
+        logger.error(f"list subs error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to list subscriptions")
+
 # Blockchain monitoring endpoints
 @app.post("/api/monitoring/start")
 async def start_monitoring(user = Depends(security)):
@@ -333,7 +455,16 @@ async def startup_event():
         await blockchain_monitor.initialize()
         await ai_service.initialize()
         await alert_service.initialize()
+        # Inject emitter for real-time alerts
+        blockchain_monitor.set_alert_emitter(sio.emit)
         logger.info("All services initialized successfully")
+        # Auto-start monitoring if enabled
+        import os
+        if (os.getenv('AUTO_START_MONITORING', 'true').lower() == 'true'):
+            try:
+                await blockchain_monitor.start()
+            except Exception as e:
+                logger.error(f"Failed to auto-start monitoring: {e}")
     except Exception as e:
         logger.error(f"Error during startup: {e}")
 

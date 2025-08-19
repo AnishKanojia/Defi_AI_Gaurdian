@@ -1,108 +1,115 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { Box, Container } from '@mui/material';
-import { io, Socket } from 'socket.io-client';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { io } from 'socket.io-client';
+
+// Contexts
+import { AuthProvider } from './context/AuthContext';
+import { AlertContext } from './context/AlertContext';
+import { SettingsProvider } from './context/SettingsContext';
+import { WalletProvider } from './context/WalletContext';
 
 // Components
-import Header from './components/Header.tsx';
-import Sidebar from './components/Sidebar.tsx';
-import Dashboard from './pages/Dashboard.tsx';
-import Monitoring from './pages/Monitoring.tsx';
-import Alerts from './pages/Alerts.tsx';
-import Analytics from './pages/Analytics.tsx';
-import Settings from './pages/Settings.tsx';
-import SignIn from './pages/SignIn.tsx';
+import Header from './components/Header';
+import ChatbotFab from './components/ChatbotFab';
 
-// Context
-import { AlertContext } from './context/AlertContext.tsx';
-import { SocketContext } from './context/SocketContext.tsx';
-import { AuthProvider } from './context/AuthContext.tsx';
+// Pages
+import Dashboard from './pages/Dashboard';
+import RiskDashboard from './pages/RiskDashboard';
+import Contracts from './pages/Contracts';
+import Wallet from './pages/Wallet';
+import Markets from './pages/Markets';
+import SecurityCenter from './pages/SecurityCenter';
+import FeaturePage from './pages/Feature';
+import SignIn from './pages/SignIn';
+import Settings from './pages/Settings';
+import Alerts from './pages/Alerts';
+import Analytics from './pages/Analytics';
 
-// Types
-import { Alert } from './types/Alert';
+// Theme
+import { theme } from './theme/theme';
 
-// Firebase Alerts Service
-import { subscribeToAlerts, addAlert as addAlertToFirestore } from './services/alerts.ts';
+// Config
+import { API_BASE } from './config';
 
-const App: React.FC = () => {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+// Socket.IO connection
+const socket = io(API_BASE);
 
-  useEffect(() => {
-    // Subscribe to Firestore alerts
-    const unsubscribe = subscribeToAlerts(100, (items) => {
-      setAlerts(items);
-    });
-    return () => unsubscribe();
-  }, []);
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize socket connection
-    const newSocket = io('http://localhost:8000', {
-      transports: ['websocket'],
-    });
-
-    newSocket.on('connect', () => {
-      console.log('Connected to server');
-    });
-
-    newSocket.on('alert', async (alert: Alert) => {
-      // Add to local state (optimistic)
-      setAlerts(prev => [alert, ...prev.slice(0, 99)]);
-      try {
-        await addAlertToFirestore(alert);
-      } catch (e) {
-        console.error('Failed to persist alert to Firestore', e);
-      }
-    });
-
-    newSocket.on('disconnect', () => {
-      console.log('Disconnected from server');
-    });
-
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.close();
+    // Check authentication status
+    const checkAuth = () => {
+      const user = localStorage.getItem('user');
+      setIsAuthenticated(!!user);
+      setIsLoading(false);
     };
+
+    checkAuth();
   }, []);
 
-  const addAlert = (alert: Alert) => {
-    setAlerts(prev => [alert, ...prev]);
-    addAlertToFirestore(alert).catch(() => undefined);
-  };
-
-  const clearAlerts = () => {
-    setAlerts([]);
-  };
+  if (isLoading) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          background: '#0A0A0A',
+          color: '#FFFFFF'
+        }}>
+          Loading...
+        </div>
+      </ThemeProvider>
+    );
+  }
 
   return (
-    <AuthProvider>
-      <SocketContext.Provider value={{ socket }}>
-        <AlertContext.Provider value={{ alerts, addAlert, clearAlerts }}>
-          <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-            <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-              <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
-
-              <Container maxWidth={false} sx={{ flexGrow: 1, py: 3, pr: 3, pl: 0 }}>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/monitoring" element={<Monitoring />} />
-                  <Route path="/alerts" element={<Alerts />} />
-                  <Route path="/analytics" element={<Analytics />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/signin" element={<SignIn />} />
-                </Routes>
-              </Container>
-            </Box>
-          </Box>
-        </AlertContext.Provider>
-      </SocketContext.Provider>
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <SettingsProvider>
+          <AlertContext.Provider value={{ alerts: [], addAlert: () => {}, clearAlerts: () => {} }}>
+            <WalletProvider>
+              <Router>
+                <div className="App">
+                  {isAuthenticated ? (
+                    <>
+                      <Header />
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/risk" element={<RiskDashboard />} />
+                        <Route path="/contracts" element={<Contracts />} />
+                        <Route path="/wallet" element={<Wallet />} />
+                        <Route path="/markets" element={<Markets />} />
+                        <Route path="/security" element={<SecurityCenter />} />
+                        <Route path="/feature/:slug" element={<FeaturePage />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/alerts" element={<Alerts />} />
+                        <Route path="/analytics" element={<Analytics />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                      </Routes>
+                      <ChatbotFab />
+                    </>
+                  ) : (
+                    <Routes>
+                      <Route path="/signin" element={<SignIn />} />
+                      <Route path="*" element={<Navigate to="/signin" replace />} />
+                    </Routes>
+                  )}
+                </div>
+              </Router>
+            </WalletProvider>
+          </AlertContext.Provider>
+        </SettingsProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
-};
+}
 
 export default App;
