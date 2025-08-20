@@ -15,22 +15,20 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import {
-  TrendingUp,
-  Security,
-  Warning,
-  CheckCircle,
-  ArrowForward,
-  AccountBalanceWallet,
-  Shield,
-  Analytics,
-  Notifications,
-  Refresh,
-} from '@mui/icons-material';
+import TrendingUp from '@mui/icons-material/TrendingUp';
+import Security from '@mui/icons-material/Security';
+import Warning from '@mui/icons-material/Warning';
+import CheckCircle from '@mui/icons-material/CheckCircle';
+import ArrowForward from '@mui/icons-material/ArrowForward';
+import AccountBalanceWallet from '@mui/icons-material/AccountBalanceWallet';
+import Shield from '@mui/icons-material/Shield';
+import Analytics from '@mui/icons-material/Analytics';
+import Notifications from '@mui/icons-material/Notifications';
+import Refresh from '@mui/icons-material/Refresh';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useAlerts } from '../context/AlertContext';
-import { useWallet } from '../context/WalletContext';
+import { useAuth } from '../context/AuthContext.tsx';
+import { useAlerts } from '../context/AlertContext.tsx';
+import { useWallet } from '../context/WalletContext.tsx';
 import { LineChart } from '@mui/x-charts/LineChart';
 
 const Dashboard: React.FC = () => {

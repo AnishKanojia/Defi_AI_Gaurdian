@@ -14,24 +14,22 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Notifications as NotificationsIcon,
-  AccountCircle,
-  Security,
-  Dashboard,
-  Analytics,
-  Settings,
-  Logout,
-  Wallet,
-  TrendingUp,
-  Shield,
-} from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Security from '@mui/icons-material/Security';
+import Dashboard from '@mui/icons-material/Dashboard';
+import Analytics from '@mui/icons-material/Analytics';
+import Settings from '@mui/icons-material/Settings';
+import Logout from '@mui/icons-material/Logout';
+import Wallet from '@mui/icons-material/Wallet';
+import TrendingUp from '@mui/icons-material/TrendingUp';
+import Shield from '@mui/icons-material/Shield';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useAlerts } from '../context/AlertContext';
-import { useWallet } from '../context/WalletContext';
-import Logo from './Logo';
+import { useAuth } from '../context/AuthContext.tsx';
+import { useAlerts } from '../context/AlertContext.tsx';
+import { useWallet } from '../context/WalletContext.tsx';
+import Logo from './Logo.tsx';
 
 const Header: React.FC = () => {
   const theme = useTheme();
@@ -78,7 +76,7 @@ const Header: React.FC = () => {
   const balance = balanceWei ? parseFloat(balanceWei) / 10**18 : 0;
 
   const navigationItems = [
-    { path: '/', label: 'Dashboard', icon: <Dashboard /> },
+    { path: '/dashboard', label: 'Dashboard', icon: <Dashboard /> },
     { path: '/risk', label: 'Risk Dashboard', icon: <Security /> },
     { path: '/contracts', label: 'Contracts', icon: <Shield /> },
     { path: '/markets', label: 'Markets', icon: <TrendingUp /> },

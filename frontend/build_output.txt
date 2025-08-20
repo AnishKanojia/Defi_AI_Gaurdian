@@ -1,0 +1,10 @@
+
+> defi-guardian-frontend@1.0.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Failed to compile.
+
+Module not found: Error: Can't resolve './AbcOutlined' in 'A:\BNB_CHAIN\frontend\node_modules\@mui\icons-material\esm'
+
+

@@ -1,125 +1,406 @@
 import React from 'react';
-import { Box, Container, Typography, Button, Grid, Card, CardContent, Chip } from '@mui/material';
+import { Box, Container, Typography, Button, Grid, Card, CardContent, Chip, useTheme } from '@mui/material';
+import TrendingUp from '@mui/icons-material/TrendingUp';
+import Security from '@mui/icons-material/Security';
+import CheckCircle from '@mui/icons-material/CheckCircle';
+import ArrowForward from '@mui/icons-material/ArrowForward';
+import Shield from '@mui/icons-material/Shield';
 import { useNavigate } from 'react-router-dom';
-
-const Glow: React.FC<{ size?: number; color?: string; opacity?: number; top?: string|number; left?: string|number }> = ({ size = 420, color = '#a855f7', opacity = 0.25, top = '-20%', left = '50%' }) => (
-  <Box
-    sx={{
-      position: 'absolute',
-      width: size,
-      height: size,
-      top,
-      left,
-      transform: 'translate(-50%, 0)',
-      background: `radial-gradient(circle at center, ${color} ${Math.round(opacity*100)}%, transparent 60%)`,
-      filter: 'blur(64px)',
-      pointerEvents: 'none',
-      zIndex: 0,
-    }}
-  />
-);
-
-const NeonCard: React.FC<{ title: string; body: string; cta?: string; onClick?: () => void }>
-  = ({ title, body, cta, onClick }) => (
-  <Card sx={(t)=>({
-    height: '100%',
-    borderRadius: 3,
-    background: t.palette.mode === 'dark'
-      ? 'linear-gradient(180deg, rgba(24,24,35,0.9) 0%, rgba(18,18,28,0.9) 100%)'
-      : 'linear-gradient(180deg, #fff 0%, #faf5ff 100%)',
-    border: `1px solid ${t.palette.mode==='dark' ? '#312e81' : '#e9d5ff'}`,
-    boxShadow: '0 0 0 1px rgba(168, 85, 247, 0.2), 0 20px 60px rgba(168,85,247,.15)',
-    position: 'relative',
-    overflow: 'hidden',
-  })}>
-    <CardContent sx={{ p: 3 }}>
-      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-        {title}
-      </Typography>
-      <Typography variant="body1" sx={{ mb: 2 }}>{body}</Typography>
-      {cta && (
-        <Button variant="contained" size="small" onClick={onClick}> {cta} </Button>
-      )}
-    </CardContent>
-  </Card>
-);
+import Logo from '../components/Logo.tsx';
 
 const Landing: React.FC = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
 
+  const features = [
+    {
+      icon: <Security sx={{ fontSize: 40, color: '#00D4FF' }} />,
+      title: 'Advanced DeFi Security',
+      description: 'Real-time monitoring and AI-powered threat detection for your crypto assets'
+    },
+    {
+      icon: <TrendingUp sx={{ fontSize: 40, color: '#00FF88' }} />,
+      title: 'Live Market Analytics',
+      description: 'Comprehensive insights and risk scoring for informed trading decisions'
+    },
+    {
+      icon: <Shield sx={{ fontSize: 40, color: '#8B5CF6' }} />,
+      title: 'Smart Contract Monitoring',
+      description: 'Continuous surveillance of DeFi protocols and contract vulnerabilities'
+    }
+  ];
+
+  const stats = [
+    { label: 'Monitored Contracts', value: '500+', color: '#00D4FF' },
+    { label: 'Security Alerts', value: '24/7', color: '#00FF88' },
+    { label: 'User Protection', value: '99.9%', color: '#8B5CF6' }
+  ];
+
   return (
-    <Box sx={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
-      <Glow size={520} color="#8b5cf6" opacity={0.28} top="-10%" left="55%" />
-      <Glow size={420} color="#06b6d4" opacity={0.22} top="20%" left="30%" />
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: `
+          radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+          #0A0A0A
+        `,
+        backgroundAttachment: 'fixed',
+        color: '#FFFFFF',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Header */}
       <Box
-        sx={(t)=>({
-          background: t.palette.mode==='dark'
-            ? 'radial-gradient(1200px 600px at 50% -10%, rgba(139,92,246,.20), transparent), radial-gradient(1200px 600px at 20% 10%, rgba(6,182,212,.15), transparent)'
-            : 'linear-gradient(180deg, #faf5ff 0%, #ffffff 100%)',
-        })}
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          background: 'rgba(10, 10, 10, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(0, 212, 255, 0.2)',
+          py: 2
+        }}
       >
-        <Container sx={{ pt: 10, pb: 6, position: 'relative', zIndex: 1 }}>
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Chip label="Secure • Scalable • AI‑Assisted" size="small" sx={{ mb: 2, bgcolor: 'primary.main', color: 'black', fontWeight: 700 }} />
-            <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>
-              Rebuilding the Future, One
-            </Typography>
-            <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, color: 'primary.main' }}>
-              Block at a Time
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720, mx: 'auto' }}>
-              From secure smart contracts to scalable digital assets, we give developers and innovators the tools to build with confidence.
-            </Typography>
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', gap: 2 }}>
-              <Button variant="contained" size="large" onClick={() => navigate('/monitoring')}>Get Started</Button>
-              <Button variant="outlined" size="large" onClick={() => navigate('/dashboard')}>Explore Dashboard</Button>
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Logo variant="compact" size="medium" color="primary" showTagline={false} />
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/dashboard')}
+                sx={{
+                  borderColor: '#00FF88',
+                  color: '#00FF88',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  '&:hover': {
+                    background: 'rgba(0, 255, 136, 0.1)',
+                    borderColor: '#00FF88',
+                  }
+                }}
+              >
+                Dashboard
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/signin')}
+                sx={{
+                  borderColor: '#00D4FF',
+                  color: '#00D4FF',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  '&:hover': {
+                    background: 'rgba(0, 212, 255, 0.1)',
+                    borderColor: '#00D4FF',
+                  }
+                }}
+              >
+                Sign In
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => navigate('/signin')}
+                sx={{
+                  background: 'linear-gradient(135deg, #00D4FF 0%, #00FF88 100%)',
+                  color: '#000000',
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #00A3CC 0%, #00CC6A 100%)',
+                    transform: 'translateY(-2px)',
+                  }
+                }}
+              >
+                Get Started
+              </Button>
             </Box>
           </Box>
+        </Container>
+      </Box>
 
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={4}>
-              <NeonCard
-                title="Customizable Dashboard"
-                body="Custom charts, filters, and tools tailored to your workflow."
-                cta="Start Now"
-                onClick={() => navigate('/dashboard')}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <NeonCard
-                title="Advanced Trading Tools"
-                body="Real‑time analytics with lightning‑fast execution and robust monitoring."
-                cta="Open Markets"
-                onClick={() => navigate('/markets')}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <NeonCard
-                title="High‑Speed Transactions"
-                body="Execute trades in seconds using our reliable routing engine."
-                cta="Start Now"
-                onClick={() => navigate('/monitoring')}
-              />
-            </Grid>
-          </Grid>
+      {/* Hero Section */}
+      <Box sx={{ pt: 16, pb: 8 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Chip
+              label="PREMIER DEFI SECURITY PLATFORM"
+              sx={{
+                background: 'rgba(0, 212, 255, 0.1)',
+                color: '#00D4FF',
+                fontWeight: 600,
+                mb: 3,
+                px: 2,
+                py: 1
+              }}
+            />
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: { xs: '2.5rem', md: '4rem', lg: '5rem' },
+                fontWeight: 800,
+                mb: 3,
+                background: 'linear-gradient(135deg, #00D4FF 0%, #00FF88 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                lineHeight: 1.2
+              }}
+            >
+              The World's Premier
+              <br />
+              DeFi Security Platform
+            </Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                color: '#B3B3B3',
+                fontWeight: 400,
+                mb: 4,
+                maxWidth: '800px',
+                mx: 'auto'
+              }}
+            >
+              Monitor Bitcoin, Ethereum, and 400+ cryptocurrencies with AI-powered security
+            </Typography>
+            
+            {/* Feature List */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 6, alignItems: 'center' }}>
+              {[
+                'Trade with 20+ currencies and advanced security protocols',
+                'Leader in regulatory compliance and security certifications',
+                'Trusted by over 150,000+ users worldwide'
+              ].map((feature, index) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <CheckCircle sx={{ color: '#00FF88', fontSize: 24 }} />
+                  <Typography variant="h6" sx={{ color: '#FFFFFF', fontWeight: 500 }}>
+                    {feature}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
 
-          <Grid container spacing={2}>
-            {[
-              { label: 'VALIDATORS SECURING NETWORK', value: '450K+' },
-              { label: 'VALIDATED BLOCKS', value: '5M+' },
-              { label: 'ACTIVE USERS', value: '54K+' },
-              { label: 'AVG LATENCY', value: '4.9 ms' },
-            ].map((s, i) => (
-              <Grid item xs={6} md={3} key={i}>
-                <Card sx={{ borderRadius: 3, backdropFilter: 'blur(8px)', border: '1px solid rgba(168,85,247,.25)' }}>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <Typography variant="h5" sx={{ fontWeight: 900, color: 'primary.main' }}>{s.value}</Typography>
-                    <Typography variant="caption" color="text.secondary">{s.label}</Typography>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate('/signin')}
+              sx={{
+                background: 'linear-gradient(135deg, #00D4FF 0%, #00FF88 100%)',
+                color: '#000000',
+                borderRadius: '16px',
+                fontWeight: 700,
+                fontSize: '1.2rem',
+                px: 6,
+                py: 2,
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #00A3CC 0%, #00CC6A 100%)',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 20px 40px rgba(0, 212, 255, 0.4)',
+                },
+                transition: 'all 0.3s ease'
+              }}
+            >
+              Sign up and get up to 1 BTC worth of rewards
+              <ArrowForward sx={{ ml: 2 }} />
+            </Button>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Features Section */}
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={4}>
+            {features.map((feature, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Card
+                  sx={{
+                    background: 'rgba(26, 26, 26, 0.95)',
+                    border: '1px solid rgba(0, 212, 255, 0.2)',
+                    borderRadius: '24px',
+                    backdropFilter: 'blur(20px)',
+                    height: '100%',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      borderColor: '#00D4FF',
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 20px 40px rgba(0, 212, 255, 0.2)',
+                    }
+                  }}
+                >
+                  <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                    <Box sx={{ mb: 3 }}>
+                      {feature.icon}
+                    </Box>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 700,
+                        color: '#FFFFFF',
+                        mb: 2
+                      }}
+                    >
+                      {feature.title}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: '#B3B3B3',
+                        lineHeight: 1.6
+                      }}
+                    >
+                      {feature.description}
+                    </Typography>
                   </CardContent>
                 </Card>
               </Grid>
             ))}
           </Grid>
+        </Container>
+      </Box>
+
+      {/* Stats Section */}
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 700,
+                color: '#FFFFFF',
+                mb: 2
+              }}
+            >
+              Trusted by Millions
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                color: '#B3B3B3',
+                maxWidth: '600px',
+                mx: 'auto'
+              }}
+            >
+              Join our growing community of security-conscious crypto traders
+            </Typography>
+          </Box>
+          
+          <Grid container spacing={4} justifyContent="center">
+            {stats.map((stat, index) => (
+              <Grid item xs={12} sm={4} key={index}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      fontWeight: 800,
+                      color: stat.color,
+                      mb: 1
+                    }}
+                  >
+                    {stat.value}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: '#B3B3B3',
+                      fontWeight: 500
+                    }}
+                  >
+                    {stat.label}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* CTA Section */}
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="lg">
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 255, 136, 0.1) 100%)',
+              border: '1px solid rgba(0, 212, 255, 0.3)',
+              borderRadius: '32px',
+              backdropFilter: 'blur(20px)',
+              textAlign: 'center',
+              p: 6
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 700,
+                color: '#FFFFFF',
+                mb: 3
+              }}
+            >
+              Ready to Secure Your Crypto?
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                color: '#B3B3B3',
+                mb: 4,
+                maxWidth: '600px',
+                mx: 'auto'
+              }}
+            >
+              Get started today and experience the most advanced DeFi security platform
+            </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate('/signin')}
+              sx={{
+                background: 'linear-gradient(135deg, #00D4FF 0%, #00FF88 100%)',
+                color: '#000000',
+                borderRadius: '16px',
+                fontWeight: 700,
+                fontSize: '1.2rem',
+                px: 6,
+                py: 2,
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #00A3CC 0%, #00CC6A 100%)',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 20px 40px rgba(0, 212, 255, 0.4)',
+                },
+                transition: 'all 0.3s ease'
+              }}
+            >
+              Get Started Now
+              <ArrowForward sx={{ ml: 2 }} />
+            </Button>
+          </Card>
+        </Container>
+      </Box>
+
+      {/* Footer */}
+      <Box
+        sx={{
+          background: 'rgba(26, 26, 26, 0.95)',
+          borderTop: '1px solid rgba(0, 212, 255, 0.2)',
+          py: 4,
+          mt: 8
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center' }}>
+            <Logo variant="compact" size="medium" color="primary" showTagline={true} />
+            <Typography
+              variant="body2"
+              sx={{
+                color: '#666666',
+                mt: 2
+              }}
+            >
+              © 2024 CryptoVault Sentinel. Advanced DeFi Security & Monitoring Platform.
+            </Typography>
+          </Box>
         </Container>
       </Box>
     </Box>
