@@ -111,6 +111,12 @@ const Dashboard: React.FC = () => {
     },
   ];
 
+  const formatBnb = (wei: string | null) => {
+    if (!wei) return '0.0000';
+    const eth = (parseInt(wei, 10) / 1e18).toFixed(4);
+    return eth;
+  };
+
   return (
     <Box
       sx={{
@@ -426,6 +432,113 @@ const Dashboard: React.FC = () => {
                     </Button>
                   ))}
                 </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Quick Wallet Access */}
+          <Grid item xs={12} lg={4}>
+            <Card
+              sx={{
+                background: 'rgba(26, 26, 26, 0.95)',
+                border: '1px solid rgba(0, 255, 136, 0.2)',
+                borderRadius: '20px',
+                backdropFilter: 'blur(20px)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 255, 136, 0.1)',
+                height: '100%',
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, color: '#FFFFFF', mb: 3 }}>
+                  Quick Wallet Access
+                </Typography>
+                {account ? (
+                  <Stack spacing={2}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Box
+                        sx={{
+                          background: 'rgba(0, 255, 136, 0.1)',
+                          borderRadius: '12px',
+                          p: 1.5,
+                          mr: 2,
+                        }}
+                      >
+                        <AccountBalanceWallet sx={{ fontSize: 28, color: '#00FF88' }} />
+                      </Box>
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#00FF88' }}>
+                          {formatBnb(balanceWei)} BNB
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#B3B3B3', fontSize: '0.75rem' }}>
+                          Connected
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="body2" sx={{ color: '#B3B3B3', fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                      {account.slice(0, 6)}...{account.slice(-4)}
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      onClick={() => navigate('/wallet')}
+                      sx={{
+                        justifyContent: 'center',
+                        p: 2,
+                        borderColor: 'rgba(0, 255, 136, 0.3)',
+                        borderRadius: '12px',
+                        color: '#00FF88',
+                        '&:hover': {
+                          borderColor: '#00FF88',
+                          background: 'rgba(0, 255, 136, 0.1)',
+                          transform: 'translateY(-2px)',
+                        },
+                        transition: 'all 0.3s ease',
+                      }}
+                    >
+                      Manage Wallet
+                    </Button>
+                  </Stack>
+                ) : (
+                  <Stack spacing={2}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Box
+                        sx={{
+                          background: 'rgba(255, 71, 87, 0.1)',
+                          borderRadius: '12px',
+                          p: 1.5,
+                          mr: 2,
+                        }}
+                      >
+                        <AccountBalanceWallet sx={{ fontSize: 28, color: '#FF4757' }} />
+                      </Box>
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#FF4757' }}>
+                          Not Connected
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#B3B3B3', fontSize: '0.75rem' }}>
+                          Connect your wallet
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Button
+                      variant="contained"
+                      onClick={() => navigate('/wallet')}
+                      sx={{
+                        background: 'linear-gradient(135deg, #00D4FF 0%, #00FF88 100%)',
+                        color: '#000000',
+                        fontWeight: 700,
+                        borderRadius: '12px',
+                        p: 2,
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #00A3CC 0%, #00CC6A 100%)',
+                          transform: 'translateY(-2px)',
+                        },
+                        transition: 'all 0.3s ease',
+                      }}
+                    >
+                      Connect Wallet
+                    </Button>
+                  </Stack>
+                )}
               </CardContent>
             </Card>
           </Grid>

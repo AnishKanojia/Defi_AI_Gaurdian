@@ -38,7 +38,7 @@ const Header: React.FC = () => {
   const location = useLocation();
   const { currentUser, signOut } = useAuth();
   const { alerts } = useAlerts();
-  const { account, balanceWei, connect } = useWallet();
+  const { account, balanceWei, connect, isCorrectChain } = useWallet();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(null);
@@ -152,16 +152,20 @@ const Header: React.FC = () => {
             {isConnected ? (
               <Chip
                 icon={<Wallet />}
-                label={`${balance.toFixed(4)} ETH`}
+                label={`${balance.toFixed(4)} BNB`}
+                onClick={() => navigate('/wallet')}
                 sx={{
                   background: 'rgba(0, 255, 136, 0.1)',
                   border: '1px solid rgba(0, 255, 136, 0.3)',
                   color: '#00FF88',
                   fontWeight: 600,
+                  cursor: 'pointer',
                   '&:hover': {
                     background: 'rgba(0, 255, 136, 0.2)',
                     borderColor: '#00FF88',
+                    transform: 'translateY(-1px)',
                   },
+                  transition: 'all 0.2s ease',
                 }}
               />
             ) : (
